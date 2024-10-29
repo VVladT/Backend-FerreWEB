@@ -53,6 +53,9 @@ public class Usuario implements UserDetails {
     @Column(name = "contraseña", nullable = false)
     private byte[] contrasena;
 
+    @Column(name = "imagen")
+    private String rutaImagen;
+
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
             name = "Roles_por_Usuario",

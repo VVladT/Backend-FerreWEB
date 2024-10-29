@@ -15,14 +15,14 @@ public class CategoriaRepositoryTest {
 
     @Test
     void testSaveAndFind() {
-        Categoria categoria = new Categoria(null, "Electrónica", "Productos electrónicos");
+        Categoria categoria = Categoria.builder().nombre("Electrónica").descripcion("Productos electrónicos").build();
         Categoria savedCategoria = categoriaRepository.save(categoria);
         Categoria foundCategoria = categoriaRepository.findById(savedCategoria.getIdCategoria()).orElse(null);
 
         assert foundCategoria != null;
         assertEquals(savedCategoria.getIdCategoria(), foundCategoria.getIdCategoria());
         assertEquals(categoria.getIdCategoria(), foundCategoria.getIdCategoria());
-        assertEquals("Electrónica", foundCategoria.getNombreCategoria());
+        assertEquals("Electrónica", foundCategoria.getNombre());
         assertEquals("Productos electrónicos", foundCategoria.getDescripcion());
     }
 }

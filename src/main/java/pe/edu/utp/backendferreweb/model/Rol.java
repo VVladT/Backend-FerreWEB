@@ -19,6 +19,9 @@ public class Rol implements GrantedAuthority {
     @Column(name = "tipo", unique = true, nullable = false)
     private String tipo;
 
+    @Column(name = "imagen")
+    private String rutaImagen;
+
     @Override
     public String getAuthority() {
         return getTipo();

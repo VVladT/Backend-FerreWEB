@@ -15,9 +15,12 @@ public class Categoria {
     @Column(name = "id_categoria")
     private Integer idCategoria;
 
-    @Column(name = "nombre_categoria")
-    private String nombreCategoria;
+    @Column(name = "nombre", nullable = false, unique = true)
+    private String nombre;
 
     @Column(name = "descripcion")
     private String descripcion;
+
+    @Column(name = "imagen")
+    private String rutaImagen;
 }
