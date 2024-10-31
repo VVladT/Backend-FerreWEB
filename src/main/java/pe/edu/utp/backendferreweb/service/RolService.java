@@ -2,8 +2,8 @@ package pe.edu.utp.backendferreweb.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pe.edu.utp.backendferreweb.model.Rol;
-import pe.edu.utp.backendferreweb.repository.RolRepository;
+import pe.edu.utp.backendferreweb.persistence.model.Rol;
+import pe.edu.utp.backendferreweb.persistence.repository.RolRepository;
 
 import java.util.List;
 
@@ -11,8 +11,4 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RolService {
     private final RolRepository repository;
-
-    public List<Rol> findAll() {
-        return repository.findAll();
-    }
 }

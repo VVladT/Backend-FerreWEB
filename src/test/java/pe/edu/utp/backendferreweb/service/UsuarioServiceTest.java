@@ -6,17 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import pe.edu.utp.backendferreweb.model.Rol;
-import pe.edu.utp.backendferreweb.model.Usuario;
+import org.springframework.test.context.ActiveProfiles;
+import pe.edu.utp.backendferreweb.persistence.model.Rol;
+import pe.edu.utp.backendferreweb.persistence.model.Usuario;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static pe.edu.utp.backendferreweb.util.BlobConverter.blobToUtf8;
-import static pe.edu.utp.backendferreweb.util.BlobConverter.utf8ToBlob;
+import static pe.edu.utp.backendferreweb.util.conversion.BlobConverter.blobToUtf8;
+import static pe.edu.utp.backendferreweb.util.conversion.BlobConverter.utf8ToBlob;
 
+@ActiveProfiles("test")
 @SpringBootTest
-@Transactional
 class UsuarioServiceTest {
     @Autowired
     UsuarioService usuarioService;

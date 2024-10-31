@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pe.edu.utp.backendferreweb.model.Usuario;
-import pe.edu.utp.backendferreweb.repository.UsuarioRepository;
+import pe.edu.utp.backendferreweb.persistence.model.Usuario;
+import pe.edu.utp.backendferreweb.persistence.repository.UsuarioRepository;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import java.util.List;
 public class UsuarioService implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
 
+    @Transactional
     @Override
     public Usuario loadUserByUsername(String username) throws UsernameNotFoundException {
         return usuarioRepository.findByEmail(username).
@@ -27,6 +28,4 @@ public class UsuarioService implements UserDetailsService {
     public Usuario register(@NonNull Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
-
-    public List<Usuario> listar(){ return usuarioRepository.findAll();}
 }
