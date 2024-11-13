@@ -28,6 +28,6 @@ public class Categoria {
     private String rutaImagen;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_eliminado")
+    @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminado;
 }

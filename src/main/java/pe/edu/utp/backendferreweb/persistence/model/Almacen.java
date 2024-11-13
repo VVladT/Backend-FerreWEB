@@ -27,6 +27,6 @@ public class Almacen {
     private Set<ProductosPorAlmacen> productosPorAlmacen;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_eliminado")
+    @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminado;
 }

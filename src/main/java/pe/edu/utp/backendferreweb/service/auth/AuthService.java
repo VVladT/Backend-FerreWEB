@@ -1,5 +1,6 @@
 package pe.edu.utp.backendferreweb.service.auth;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +29,7 @@ public class AuthService {
         UserDetails usuario = usuarioService.loadUserByUsername(user);
         return jwtService.getToken(usuario);
     }
+
 
     public String register(String user, String contrasena, String dni,
                            String nombre, String apellidoPat, String apellidoMat) {

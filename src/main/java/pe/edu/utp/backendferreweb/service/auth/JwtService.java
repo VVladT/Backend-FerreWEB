@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.backendferreweb.config.auth.ExpireTimeConfig;
@@ -14,6 +15,7 @@ import pe.edu.utp.backendferreweb.config.auth.ExpireTimeConfig;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -30,6 +32,12 @@ public class JwtService {
     }
 
     private String getToken(Map<String, Object> extraClaims, UserDetails user) {
+        List<String> roles = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList();
+
+        extraClaims.put("roles", roles);
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

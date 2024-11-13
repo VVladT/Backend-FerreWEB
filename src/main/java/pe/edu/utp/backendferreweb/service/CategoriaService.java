@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoriaService {
     private final CategoriaRepository categoriaRepository;
-    private final FileService fileService;
+    private final StorageService storageService;
 
     public List<Categoria> obtenerTodas() {
         return categoriaRepository.findAllActive();
@@ -46,7 +46,7 @@ public class CategoriaService {
             Categoria categoriaGuardada = categoriaRepository.save(categoria);
 
             if (imagen != null && !imagen.isEmpty()) {
-                String rutaImagen = fileService.uploadImage(imagen, "categoria\\" + categoria.getIdCategoria());
+                String rutaImagen = storageService.uploadImage(imagen, "categoria/" + categoriaGuardada.getIdCategoria() + ".webp");
                 categoriaGuardada.setRutaImagen(rutaImagen);
             }
 
@@ -70,7 +70,7 @@ public class CategoriaService {
             categoriaParaActualizar.setDescripcion(nuevaDescripcion);
 
             if (imagen != null && !imagen.isEmpty()) {
-                String rutaImagen = fileService.uploadImage(imagen, "categoria\\" + categoriaParaActualizar.getIdCategoria());
+                String rutaImagen = storageService.uploadImage(imagen, "categoria/" + categoriaParaActualizar.getIdCategoria());
                 categoriaParaActualizar.setRutaImagen(rutaImagen);
             }
 

@@ -21,6 +21,6 @@ public class Unidad {
     private String nombre;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_eliminado")
+    @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminado;
 }

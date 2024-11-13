@@ -25,10 +25,6 @@ public class Rol implements GrantedAuthority {
     @Column(name = "imagen")
     private String rutaImagen;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_eliminado")
-    private LocalDateTime fechaEliminado;
-
     @Override
     public String getAuthority() {
         return getTipo();

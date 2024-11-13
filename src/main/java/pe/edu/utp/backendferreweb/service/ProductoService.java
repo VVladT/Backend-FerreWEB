@@ -11,7 +11,6 @@ import pe.edu.utp.backendferreweb.presentation.dto.request.AlmacenCantidadReques
 import pe.edu.utp.backendferreweb.presentation.dto.request.ProductoRequest;
 import pe.edu.utp.backendferreweb.presentation.dto.request.UnidadProductoRequest;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class ProductoService {
     private final UnidadService unidadService;
     private final UnidadesPorProductoService unidadesPorProductoService;
     private final ProductosPorAlmacenService productosPorAlmacenService;
-    private final FileService fileService;
+    private final StorageService storageService;
 
     public List<Producto> obtenerTodos() {
         return productoRepository.findAllActive();
@@ -39,7 +38,7 @@ public class ProductoService {
     }
 
     @Transactional
-    public Producto crearProducto(ProductoRequest request, MultipartFile imagen) throws IOException {
+    public Producto crearProducto(ProductoRequest request, MultipartFile imagen) {
         Categoria categoria = categoriaService.obtenerPorNombre(request.getCategoria());
         Unidad unidadPorDefecto = unidadService.obtenerPorNombre(request.getUnidadPorDefecto());
         Producto nuevoProducto = Producto.builder()
@@ -51,24 +50,11 @@ public class ProductoService {
 
         nuevoProducto = productoRepository.save(nuevoProducto);
 
-        if (imagen != null && !imagen.isEmpty()) {
-            String rutaImagen = fileService.uploadImage(imagen, "producto\\" + nuevoProducto.getIdProducto());
-            nuevoProducto.setRutaImagen(rutaImagen);
-        }
-
-        for (UnidadProductoRequest unidadProductoRequest : request.getUnidadesPermitidas()) {
-            unidadesPorProductoService.registrarUnidadesPorProducto(nuevoProducto, unidadProductoRequest);
-        }
-
-        for (AlmacenCantidadRequest almacenCantidadRequest : request.getAlmacenes()) {
-            productosPorAlmacenService.registrarProductosPorAlmacen(nuevoProducto, almacenCantidadRequest);
-        }
-
-        return nuevoProducto;
+        return actualizarCargaDeProducto(nuevoProducto, request, imagen);
     }
 
     @Transactional
-    public Producto editarProducto(Integer id, ProductoRequest request, MultipartFile imagen) throws IOException {
+    public Producto editarProducto(Integer id, ProductoRequest request, MultipartFile imagen) {
         Producto productoExistente = productoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con ID: " + id));
 
@@ -81,20 +67,7 @@ public class ProductoService {
         Unidad nuevaUnidadPorDefecto = unidadService.obtenerPorNombre(request.getUnidadPorDefecto());
         productoExistente.setUnidadPorDefecto(nuevaUnidadPorDefecto);
 
-        if (imagen != null && !imagen.isEmpty()) {
-            String rutaImagen = fileService.uploadImage(imagen, "producto\\" + productoExistente.getIdProducto());
-            productoExistente.setRutaImagen(rutaImagen);
-        }
-
-        for (UnidadProductoRequest unidadProductoRequest : request.getUnidadesPermitidas()) {
-            unidadesPorProductoService.registrarUnidadesPorProducto(productoExistente, unidadProductoRequest);
-        }
-
-        for (AlmacenCantidadRequest almacenCantidadRequest : request.getAlmacenes()) {
-            productosPorAlmacenService.registrarProductosPorAlmacen(productoExistente, almacenCantidadRequest);
-        }
-
-        return productoRepository.save(productoExistente);
+        return actualizarCargaDeProducto(productoExistente, request, imagen);
     }
 
     public void eliminarProducto(Integer id) {
@@ -105,5 +78,22 @@ public class ProductoService {
         productoParaEliminar.setFechaEliminado(LocalDateTime.now());
 
         productoRepository.save(productoParaEliminar);
+    }
+
+    private Producto actualizarCargaDeProducto(Producto producto, ProductoRequest request, MultipartFile imagen) {
+        if (imagen != null && !imagen.isEmpty()) {
+            String rutaImagen = storageService.uploadImage(imagen, "producto/" + producto.getIdProducto());
+            producto.setRutaImagen(rutaImagen);
+        }
+
+        for (UnidadProductoRequest unidadProductoRequest : request.getUnidadesPermitidas()) {
+            unidadesPorProductoService.registrarUnidadesPorProducto(producto, unidadProductoRequest);
+        }
+
+        for (AlmacenCantidadRequest almacenCantidadRequest : request.getAlmacenes()) {
+            productosPorAlmacenService.registrarProductosPorAlmacen(producto, almacenCantidadRequest);
+        }
+
+        return productoRepository.save(producto);
     }
 }

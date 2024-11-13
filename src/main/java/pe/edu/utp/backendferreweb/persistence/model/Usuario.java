@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import static pe.edu.utp.backendferreweb.util.conversion.BlobConverter.blobToUtf8;
@@ -57,10 +58,10 @@ public class Usuario implements UserDetails {
     private String rutaImagen;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_eliminado")
+    @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminado;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "Roles_por_Usuario",
             joinColumns = @JoinColumn(name = "id_usuario"),
@@ -69,6 +70,7 @@ public class Usuario implements UserDetails {
     private Set<Rol> roles;
 
     public boolean addRol(Rol rol) {
+        if (roles == null) roles = new HashSet<>();
         return roles.add(rol);
     }
 

@@ -40,7 +40,7 @@ public class Producto {
     private Integer stock;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_eliminado")
+    @Column(name = "fecha_eliminacion")
     private LocalDateTime fechaEliminado;
 
     @Column(name = "imagen")

@@ -9,7 +9,6 @@ import pe.edu.utp.backendferreweb.persistence.model.Producto;
 import pe.edu.utp.backendferreweb.presentation.dto.request.ProductoRequest;
 import pe.edu.utp.backendferreweb.service.ProductoService;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -33,7 +32,7 @@ public class ProductoController {
 
     @PostMapping
     public ResponseEntity<Producto> crearProducto(@RequestPart ProductoRequest request,
-                                                  @RequestPart MultipartFile imagen) throws IOException {
+                                                  @RequestPart MultipartFile imagen) {
         Producto nuevoProducto = productoService.crearProducto(request, imagen);
         return new ResponseEntity<>(nuevoProducto, HttpStatus.CREATED);
     }
@@ -41,7 +40,7 @@ public class ProductoController {
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizarProducto(@PathVariable Integer id,
                                                        @RequestPart ProductoRequest request,
-                                                       @RequestPart MultipartFile imagen) throws IOException {
+                                                       @RequestPart MultipartFile imagen) {
         Producto productoActualizado = productoService.editarProducto(id, request, imagen);
         return ResponseEntity.ok(productoActualizado);
     }

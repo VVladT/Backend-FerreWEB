@@ -2,16 +2,15 @@ package pe.edu.utp.backendferreweb.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import pe.edu.utp.backendferreweb.persistence.model.Almacen;
 import pe.edu.utp.backendferreweb.persistence.model.Rol;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface RolRepository extends JpaRepository<Rol, Integer> {
-    @Query("SELECT r FROM Rol r WHERE r.fechaEliminado IS NULL")
-    List<Almacen> findAllActive();
+    Optional<Rol> getRolByTipo(String name);
 
-    @Query("SELECT r FROM Rol r WHERE r.idRol = :id AND r.fechaEliminado IS NULL")
-    Almacen findActiveById(@Param("id") Integer id);
+    boolean existsByTipo(String tipo);
+
+    @Query("SELECT COUNT(u) > 0 FROM Usuario u JOIN u.roles r WHERE r.idRol = :id")
+    boolean isAssociated(Integer id);
 }
