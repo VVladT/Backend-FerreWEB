@@ -4,13 +4,12 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.cloud.StorageClient;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import pe.edu.utp.backendferreweb.exceptions.FileUploadException;
 import pe.edu.utp.backendferreweb.util.conversion.ImageConverter;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @Service

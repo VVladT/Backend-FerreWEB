@@ -32,12 +32,6 @@ public class JwtService {
     }
 
     private String getToken(Map<String, Object> extraClaims, UserDetails user) {
-        List<String> roles = user.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList();
-
-        extraClaims.put("roles", roles);
-
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

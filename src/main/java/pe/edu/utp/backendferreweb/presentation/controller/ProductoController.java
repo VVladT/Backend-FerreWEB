@@ -40,7 +40,7 @@ public class ProductoController {
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizarProducto(@PathVariable Integer id,
                                                        @RequestPart ProductoRequest request,
-                                                       @RequestPart MultipartFile imagen) {
+                                                       @RequestPart(required = false) MultipartFile imagen) {
         Producto productoActualizado = productoService.editarProducto(id, request, imagen);
         return ResponseEntity.ok(productoActualizado);
     }

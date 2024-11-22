@@ -17,17 +17,37 @@ import java.util.List;
 public class RolController {
     private final RolService rolService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<List<Rol>> obtenerRolesDeUsuario(@PathVariable Integer id) {
-        List<Rol> roles = rolService.obtenerRolesPorIdUsuario(id);
+    @GetMapping
+    public ResponseEntity<List<Rol>> obtenerRoles() {
+        List<Rol> roles = rolService.obtenerTodos();
         return ResponseEntity.ok(roles);
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Rol> obtenerRol(@PathVariable Integer id) {
+        Rol rol = rolService.obtenerPorId(id);
+        return ResponseEntity.ok(rol);
+    }
+
+    @GetMapping("/tipo/{tipo}")
+    public ResponseEntity<Rol> obtenerRol(@PathVariable String tipo) {
+        Rol rol = rolService.obtenerPorTipo(tipo);
+        return ResponseEntity.ok(rol);
     }
 
     @PostMapping()
     public ResponseEntity<Rol> crearRol(@RequestPart RolRequest request,
-                                                  @RequestPart MultipartFile imagen) {
+                                        @RequestPart(required = false) MultipartFile imagen) {
         Rol nuevoRol = rolService.crearRol(request, imagen);
         return new ResponseEntity<>(nuevoRol, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Rol> actualizarRol(@PathVariable Integer id,
+                                             @RequestPart RolRequest request,
+                                             @RequestPart(required = false) MultipartFile imagen) {
+        Rol nuevoRol = rolService.editarRol(id, request, imagen);
+        return ResponseEntity.ok(nuevoRol);
     }
 
     @DeleteMapping("/{id}")

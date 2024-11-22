@@ -2,6 +2,8 @@ package pe.edu.utp.backendferreweb.presentation.dto.request;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -13,4 +15,6 @@ public class UsuarioRequest {
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String contrasena;
+    private String direccion;
+    private List<String> roles;
 }

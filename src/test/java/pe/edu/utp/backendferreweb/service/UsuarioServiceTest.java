@@ -1,6 +1,5 @@
 package pe.edu.utp.backendferreweb.service;
 
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +8,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import pe.edu.utp.backendferreweb.persistence.model.Rol;
 import pe.edu.utp.backendferreweb.persistence.model.Usuario;
+import pe.edu.utp.backendferreweb.presentation.dto.request.UsuarioRequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,26 +23,23 @@ import static pe.edu.utp.backendferreweb.util.conversion.BlobConverter.utf8ToBlo
 class UsuarioServiceTest {
     @Autowired
     UsuarioService usuarioService;
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @Test
     void loadUserByUsername() {
-        Usuario usuario = Usuario.builder()
+        UsuarioRequest request = UsuarioRequest.builder()
                 .dni("12345678")
                 .nombre("Vladimir")
-                .email("vlad.tunoque@example.com")
-                .contrasena(utf8ToBlob(passwordEncoder.encode("pokiTrop123")))
+                .user("vlad.tunoque@example.com")
+                .contrasena("pokiTrop123")
                 .apellidoPaterno("Tuñoque")
                 .apellidoMaterno("Morante")
-                .roles(Set.of(Rol.builder().tipo("ADMIN").build()))
+                .roles(List.of("ADMIN"))
                 .build();
 
-        usuarioService.register(usuario);
+        usuarioService.registrarUsuario(request);
 
         UserDetails usuarioFound = usuarioService.loadUserByUsername("vlad.tunoque@example.com");
-        assertEquals(usuario.getEmail(), usuarioFound.getUsername());
-        assertEquals(blobToUtf8(usuario.getContrasena()), usuarioFound.getPassword());
-        assertEquals(usuario.getRoles().iterator().next().getTipo(), usuarioFound.getAuthorities().iterator().next().getAuthority());
+        assertEquals(request.getUser(), usuarioFound.getUsername());
+        assertEquals(request.getRoles().getFirst(), usuarioFound.getAuthorities().iterator().next().getAuthority());
     }
 }

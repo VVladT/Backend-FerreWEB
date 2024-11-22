@@ -9,7 +9,6 @@ import pe.edu.utp.backendferreweb.persistence.model.Categoria;
 import pe.edu.utp.backendferreweb.presentation.dto.request.CategoriaRequest;
 import pe.edu.utp.backendferreweb.service.CategoriaService;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -34,15 +33,15 @@ public class CategoriaController {
 
     @PostMapping
     public ResponseEntity<Categoria> crearCategoria(@RequestPart CategoriaRequest request,
-                                                    @RequestPart MultipartFile imagen) throws IOException {
+                                                    @RequestPart(required = false) MultipartFile imagen) {
         Categoria nuevaCategoria = categoriaService.crearCategoria(request, imagen);
         return new ResponseEntity<>(nuevaCategoria, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Categoria> actualizarCategoria(@PathVariable Integer id,
-                                                         @RequestPart MultipartFile imagen,
-                                                         @RequestBody CategoriaRequest request) throws IOException {
+                                                         @RequestPart CategoriaRequest request,
+                                                         @RequestPart(required = false) MultipartFile imagen) {
         Categoria categoriaActualizada = categoriaService.editarCategoria(id, request, imagen);
         return ResponseEntity.ok(categoriaActualizada);
     }

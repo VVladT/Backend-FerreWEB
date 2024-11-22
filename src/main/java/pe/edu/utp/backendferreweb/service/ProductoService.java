@@ -82,7 +82,7 @@ public class ProductoService {
 
     private Producto actualizarCargaDeProducto(Producto producto, ProductoRequest request, MultipartFile imagen) {
         if (imagen != null && !imagen.isEmpty()) {
-            String rutaImagen = storageService.uploadImage(imagen, "producto/" + producto.getIdProducto());
+            String rutaImagen = storageService.uploadImage(imagen, "producto/" + producto.getIdProducto() + ".webp");
             producto.setRutaImagen(rutaImagen);
         }
 

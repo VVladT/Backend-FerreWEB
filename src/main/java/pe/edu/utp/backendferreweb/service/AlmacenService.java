@@ -2,6 +2,7 @@ package pe.edu.utp.backendferreweb.service;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.backendferreweb.persistence.model.Almacen;
@@ -16,6 +17,7 @@ import java.util.List;
 public class AlmacenService {
     private final AlmacenRepository almacenRepository;
 
+    @Transactional
     public List<Almacen> obtenerTodos() {
         return almacenRepository.findAllActive();
     }
@@ -47,14 +49,15 @@ public class AlmacenService {
         String nuevoNombre = request.getNombre();
         String nuevaDireccion = request.getDireccion();
 
-        if (almacenRepository.existsByNombre(nuevoNombre)) {
-            throw new EntityExistsException("El almacen con el nombre \""
-                    + nuevoNombre + "\" ya existe.");
+        Almacen almacenParaActualizar = almacenRepository.findActiveById(id);
+
+        if (almacenParaActualizar == null) throw new EntityNotFoundException("El almacen no existe.");
+
+        if (almacenParaActualizar.getNombre().equals(nuevoNombre) &&
+                almacenRepository.existsByNombre(nuevoNombre)) {
+            throw new EntityExistsException("El almacen con el nombre: "
+                    + nuevoNombre + " ya existe.");
         } else {
-            Almacen almacenParaActualizar = almacenRepository.findActiveById(id);
-
-            if (almacenParaActualizar == null) throw new EntityNotFoundException("El almacen no existe.");
-
             almacenParaActualizar.setNombre(nuevoNombre);
             almacenParaActualizar.setDireccion(nuevaDireccion);
 

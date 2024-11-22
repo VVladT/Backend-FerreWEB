@@ -1,60 +1,63 @@
 package pe.edu.utp.backendferreweb.service.auth;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.backendferreweb.persistence.model.Usuario;
+import pe.edu.utp.backendferreweb.presentation.dto.request.UsuarioRequest;
+import pe.edu.utp.backendferreweb.presentation.dto.response.AuthResponse;
+import pe.edu.utp.backendferreweb.presentation.dto.response.RolResponse;
+import pe.edu.utp.backendferreweb.presentation.dto.response.UsuarioResponse;
 import pe.edu.utp.backendferreweb.service.UsuarioService;
 
-import java.util.HashSet;
-import java.util.regex.Pattern;
-
-import static pe.edu.utp.backendferreweb.util.conversion.BlobConverter.utf8ToBlob;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public String login(String user, String contrasena) {
+    public AuthResponse login(UsuarioRequest request) {
+        String user = request.getUser();
+        String contrasena = request.getContrasena();
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, contrasena));
-        UserDetails usuario = usuarioService.loadUserByUsername(user);
-        return jwtService.getToken(usuario);
+        Usuario usuario = usuarioService.loadUserByUsername(user);
+
+        return buildAuthResponse(usuario);
     }
 
 
-    public String register(String user, String contrasena, String dni,
-                           String nombre, String apellidoPat, String apellidoMat) {
-        Usuario usuario = Usuario.builder()
-                .dni(dni)
-                .email(isEmail(user) ? user : null)
-                .telefono(isTelefono(user) ? user : null)
-                .nombre(nombre)
-                .apellidoPaterno(apellidoPat)
-                .apellidoMaterno(apellidoMat)
-                .contrasena(utf8ToBlob(passwordEncoder.encode(contrasena)))
-                .roles(new HashSet<>())
+    public AuthResponse register(UsuarioRequest request) {
+        Usuario usuario = usuarioService.registrarUsuario(request);
+
+        return buildAuthResponse(usuario);
+    }
+
+    private AuthResponse buildAuthResponse(Usuario usuario) {
+        return AuthResponse.builder()
+                .token(jwtService.getToken(usuario))
+                .usuario(UsuarioResponse.builder()
+                        .id(usuario.getIdUsuario())
+                        .username(usuario.getUsername())
+                        .dni(usuario.getDni())
+                        .nombre(usuario.getNombre())
+                        .apellidoPat(usuario.getApellidoPaterno())
+                        .apellidoMat(usuario.getApellidoMaterno())
+                        .rutaImagen(usuario.getRutaImagen())
+                        .fechaEliminacion(usuario.getFechaEliminado() != null ? usuario.getFechaEliminado().format(formatter) : "")
+                        .roles(usuario.getRoles().stream().map(
+                                rol -> RolResponse.builder()
+                                        .idRol(rol.getIdRol())
+                                        .tipo(rol.getTipo())
+                                        .rutaImagen(rol.getRutaImagen())
+                                        .build()
+                        ).toList())
+                        .build())
                 .build();
-
-        usuarioService.register(usuario);
-        return jwtService.getToken(usuario);
-    }
-
-    private boolean isTelefono(String username) {
-        String regex = "^9\\d{8}$";
-        return Pattern.matches(regex, username);
-    }
-
-    private boolean isEmail(String username) {
-        String regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        return Pattern.matches(regex, username);
     }
 }

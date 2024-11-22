@@ -41,15 +41,14 @@ public class UnidadService {
 
     public Unidad editarUnidad(int id, UnidadRequest request) {
         String nuevoNombre = request.getUnidad();
+        Unidad unidadParaActualizar = unidadRepository.findActiveById(id);
+
+        if (unidadParaActualizar == null) throw new EntityNotFoundException("La unidad no existe.");
 
         if (unidadRepository.existsByNombre(nuevoNombre)) {
             throw new EntityExistsException("La unidad con el nombre \""
                     + nuevoNombre + "\" ya existe.");
         } else {
-            Unidad unidadParaActualizar = unidadRepository.findActiveById(id);
-
-            if (unidadParaActualizar == null) throw new EntityNotFoundException("La unidad no existe.");
-
             unidadParaActualizar.setNombre(nuevoNombre);
 
             return unidadRepository.save(unidadParaActualizar);

@@ -27,7 +27,7 @@ public class Producto {
     @JoinColumn(name = "id_unidad")
     private Unidad unidadPorDefecto;
 
-    @OneToMany(mappedBy = "producto")
+    @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER)
     private Set<UnidadesPorProducto> unidades;
 
     @Column(name = "nombre", nullable = false)
@@ -46,7 +46,7 @@ public class Producto {
     @Column(name = "imagen")
     private String rutaImagen;
 
-    @OneToMany(mappedBy = "producto")
+    @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER)
     private Set<ProductosPorAlmacen> productosPorAlmacen;
 
     @PrePersist

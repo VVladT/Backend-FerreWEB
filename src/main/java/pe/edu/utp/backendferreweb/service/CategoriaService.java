@@ -31,7 +31,7 @@ public class CategoriaService {
         return categoria;
     }
 
-    public Categoria crearCategoria(CategoriaRequest request, MultipartFile imagen) throws IOException {
+    public Categoria crearCategoria(CategoriaRequest request, MultipartFile imagen) {
         String nombre = request.getNombre();
         String descripcion = request.getDescripcion();
 
@@ -54,23 +54,23 @@ public class CategoriaService {
         }
     }
 
-    public Categoria editarCategoria(Integer id, CategoriaRequest request, MultipartFile imagen) throws IOException {
+    public Categoria editarCategoria(Integer id, CategoriaRequest request, MultipartFile imagen) {
         String nuevoNombre = request.getNombre();
         String nuevaDescripcion = request.getDescripcion();
+        Categoria categoriaParaActualizar = categoriaRepository.findActiveById(id);
 
-        if (categoriaRepository.existsByNombre(nuevoNombre)) {
+
+        if (categoriaParaActualizar == null) throw new EntityNotFoundException("La categoría no existe.");
+
+        if (!categoriaParaActualizar.getNombre().equals(nuevoNombre) && categoriaRepository.existsByNombre(nuevoNombre)) {
             throw new EntityExistsException("La categoría con el nombre \""
                     + nuevoNombre + "\" ya existe.");
         } else {
-            Categoria categoriaParaActualizar = categoriaRepository.findActiveById(id);
-
-            if (categoriaParaActualizar == null) throw new EntityNotFoundException("La categoría no existe.");
-
             categoriaParaActualizar.setNombre(nuevoNombre);
             categoriaParaActualizar.setDescripcion(nuevaDescripcion);
 
             if (imagen != null && !imagen.isEmpty()) {
-                String rutaImagen = storageService.uploadImage(imagen, "categoria/" + categoriaParaActualizar.getIdCategoria());
+                String rutaImagen = storageService.uploadImage(imagen, "categoria/" + categoriaParaActualizar.getIdCategoria() + ".webp");
                 categoriaParaActualizar.setRutaImagen(rutaImagen);
             }
 

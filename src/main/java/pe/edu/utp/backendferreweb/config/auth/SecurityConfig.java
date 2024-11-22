@@ -4,6 +4,7 @@ package pe.edu.utp.backendferreweb.config.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.*;
 import pe.edu.utp.backendferreweb.config.auth.filter.JwtAuthFilter;
+import pe.edu.utp.backendferreweb.persistence.model.enums.ERol;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +50,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authRequest -> authRequest
                         .requestMatchers("/api/auth/**").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/users/me").authenticated()
+                        .requestMatchers("/api/users/**").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers("/api/roles/**").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers("/api/almacenes/**").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+                        .requestMatchers("/api/categorias/**").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+                        .requestMatchers("/api/productos/**").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers("api/unidades/**").hasAuthority(ERol.ADMIN.name())
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager -> sessionManager
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

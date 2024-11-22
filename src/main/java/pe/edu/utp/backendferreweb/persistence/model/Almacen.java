@@ -15,6 +15,7 @@ import java.util.Set;
 public class Almacen {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_almacen")
     private Integer idAlmacen;
 
     @Column(name = "nombre")
@@ -23,7 +24,7 @@ public class Almacen {
     @Column(name = "direccion")
     private String direccion;
 
-    @OneToMany(mappedBy = "almacen")
+    @OneToMany(mappedBy = "almacen", fetch = FetchType.EAGER)
     private Set<ProductosPorAlmacen> productosPorAlmacen;
 
     @Temporal(TemporalType.TIMESTAMP)
