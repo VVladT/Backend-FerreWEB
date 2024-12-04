@@ -26,5 +26,8 @@ public class UnidadesPorProducto {
 
     @Column(name = "precio")
     private Double precio;
+
+    @Column(name = "equivalencia")
+    private Double equivalencia;
 }
 

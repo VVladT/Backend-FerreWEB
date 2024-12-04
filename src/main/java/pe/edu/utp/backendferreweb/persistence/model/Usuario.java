@@ -40,12 +40,8 @@ public class Usuario implements UserDetails {
     private String apellidoMaterno;
 
     @Email
-    @Column(name = "email")
-    private String email;
-
-    @Pattern(regexp = "^9\\d{8}$")
-    @Column(name = "telefono")
-    private String telefono;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "direccion")
     private String direccion;
@@ -86,13 +82,6 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername() {
-        boolean emailNonExists = email == null || email.isBlank();
-        boolean telefonoNonExists = telefono == null || telefono.isBlank();
-
-        if (emailNonExists && telefonoNonExists) {
-            throw new UsernameNotFoundException("The user has not a email or telephone.");
-        }
-
-        return emailNonExists ? telefono : email;
+        return username;
     }
 }

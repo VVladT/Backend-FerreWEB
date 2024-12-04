@@ -27,6 +27,22 @@ public class JwtService {
 
     private final ExpireTimeConfig expireTime;
 
+    public String getToken(String username) {
+        return getToken(new HashMap<>(), username);
+    }
+
+    private String getToken(Map<String, Object> extraClaims, String user) {
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(user)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() +
+                        expireTime.getMillis()))
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public String getToken(UserDetails user) {
         return getToken(new HashMap<>(), user);
     }

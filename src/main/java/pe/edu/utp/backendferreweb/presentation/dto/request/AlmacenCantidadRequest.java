@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class AlmacenCantidadRequest {
+    private Integer idProducto;
     private String nombreAlmacen;
-    private int cantidadProductos;
+    private Integer cantidadProductos;
 }

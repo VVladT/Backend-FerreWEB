@@ -20,15 +20,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query("SELECT u FROM Usuario u WHERE u.idUsuario = :id AND u.fechaEliminado IS NULL")
     Usuario findActiveById(@Param("id") Integer id);
 
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM Usuario u WHERE u.email = :email AND u.fechaEliminado IS NULL")
-    boolean existsByEmail(@Param("email") String email);
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM Usuario u WHERE u.username = :username AND u.fechaEliminado IS NULL")
+    boolean existsByUsername(@Param("username") String username);
 
-    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM Usuario u WHERE u.telefono = :telefono AND u.fechaEliminado IS NULL")
-    boolean existsByTelefono(@Param("telefono") String telefono);
-
-    @Query("SELECT u FROM Usuario u WHERE u.email = :email AND u.fechaEliminado IS NULL")
-    Optional<Usuario> findByEmail(@Param("email") String email);
-
-    @Query("SELECT u FROM Usuario u WHERE u.telefono = :telefono AND u.fechaEliminado IS NULL")
-    Optional<Usuario> findByTelefono(@Param("telefono") String telefono);
+    @Query("SELECT u FROM Usuario u WHERE u.username = :username AND u.fechaEliminado IS NULL")
+    Optional<Usuario> findByUsername(@Param("username") String username);
 }

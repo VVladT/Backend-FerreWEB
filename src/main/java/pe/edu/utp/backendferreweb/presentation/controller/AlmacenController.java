@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.backendferreweb.persistence.model.Almacen;
 import pe.edu.utp.backendferreweb.presentation.dto.request.AlmacenRequest;
+import pe.edu.utp.backendferreweb.presentation.dto.response.AlmacenResponse;
 import pe.edu.utp.backendferreweb.service.AlmacenService;
 
 import java.util.List;
@@ -18,26 +19,26 @@ public class AlmacenController {
     private final AlmacenService almacenService;
 
     @GetMapping
-    public ResponseEntity<List<Almacen>> obtenerAlmacenes() {
-        List<Almacen> almacenes = almacenService.obtenerTodos();
+    public ResponseEntity<List<AlmacenResponse>> obtenerAlmacenes() {
+        List<AlmacenResponse> almacenes = almacenService.obtenerTodos();
         return ResponseEntity.ok(almacenes);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Almacen> obtenerAlmacen(@PathVariable Integer id) {
-        Almacen almacen = almacenService.obtenerPorId(id);
+    public ResponseEntity<AlmacenResponse> obtenerAlmacen(@PathVariable Integer id) {
+        AlmacenResponse almacen = almacenService.obtenerPorId(id);
         return ResponseEntity.ok(almacen);
     }
 
     @PostMapping
-    public ResponseEntity<Almacen> crearAlmacen(@RequestBody AlmacenRequest request) {
-        Almacen nuevoAlmacen = almacenService.crearAlmacen(request);
+    public ResponseEntity<AlmacenResponse> crearAlmacen(@RequestBody AlmacenRequest request) {
+        AlmacenResponse nuevoAlmacen = almacenService.crearAlmacen(request);
         return new ResponseEntity<>(nuevoAlmacen, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Almacen> actualizarAlmacen(@PathVariable Integer id, @RequestBody AlmacenRequest request) {
-        Almacen almacenActualizado = almacenService.editarAlmacen(id, request);
+    public ResponseEntity<AlmacenResponse> actualizarAlmacen(@PathVariable Integer id, @RequestBody AlmacenRequest request) {
+        AlmacenResponse almacenActualizado = almacenService.editarAlmacen(id, request);
         return ResponseEntity.ok(almacenActualizado);
     }
 

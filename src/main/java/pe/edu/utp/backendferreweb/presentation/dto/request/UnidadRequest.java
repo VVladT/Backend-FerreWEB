@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class UnidadRequest {
-    private String unidad;
+    private String nombre;
 }

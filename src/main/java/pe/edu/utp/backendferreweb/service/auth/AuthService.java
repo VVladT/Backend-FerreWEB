@@ -1,63 +1,47 @@
 package pe.edu.utp.backendferreweb.service.auth;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.backendferreweb.persistence.model.Usuario;
+import pe.edu.utp.backendferreweb.presentation.dto.mappers.UsuarioMapper;
 import pe.edu.utp.backendferreweb.presentation.dto.request.UsuarioRequest;
 import pe.edu.utp.backendferreweb.presentation.dto.response.AuthResponse;
-import pe.edu.utp.backendferreweb.presentation.dto.response.RolResponse;
 import pe.edu.utp.backendferreweb.presentation.dto.response.UsuarioResponse;
 import pe.edu.utp.backendferreweb.service.UsuarioService;
 
-import java.time.format.DateTimeFormatter;
-
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthService {
+
+    private final AuthenticationManager authenticationManager;
     private final UsuarioService usuarioService;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final UsuarioMapper usuarioMapper;
 
     public AuthResponse login(UsuarioRequest request) {
         String user = request.getUser();
         String contrasena = request.getContrasena();
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, contrasena));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user, contrasena));
+        } catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Credenciales incorrectas");
+        }
         Usuario usuario = usuarioService.loadUserByUsername(user);
+        String jwtToken = jwtService.getToken(usuario);
 
-        return buildAuthResponse(usuario);
+        return new AuthResponse(jwtToken, usuarioMapper.toResponse(usuario));
     }
 
+    public AuthResponse registrarUsuario(UsuarioRequest request) {
+        UsuarioResponse usuarioResponse = usuarioService.registrarUsuario(request, null);
+        String jwtToken = jwtService.getToken(request.getUser());
 
-    public AuthResponse register(UsuarioRequest request) {
-        Usuario usuario = usuarioService.registrarUsuario(request);
-
-        return buildAuthResponse(usuario);
-    }
-
-    private AuthResponse buildAuthResponse(Usuario usuario) {
-        return AuthResponse.builder()
-                .token(jwtService.getToken(usuario))
-                .usuario(UsuarioResponse.builder()
-                        .id(usuario.getIdUsuario())
-                        .username(usuario.getUsername())
-                        .dni(usuario.getDni())
-                        .nombre(usuario.getNombre())
-                        .apellidoPat(usuario.getApellidoPaterno())
-                        .apellidoMat(usuario.getApellidoMaterno())
-                        .rutaImagen(usuario.getRutaImagen())
-                        .fechaEliminacion(usuario.getFechaEliminado() != null ? usuario.getFechaEliminado().format(formatter) : "")
-                        .roles(usuario.getRoles().stream().map(
-                                rol -> RolResponse.builder()
-                                        .idRol(rol.getIdRol())
-                                        .tipo(rol.getTipo())
-                                        .rutaImagen(rol.getRutaImagen())
-                                        .build()
-                        ).toList())
-                        .build())
-                .build();
+        return new AuthResponse(jwtToken, usuarioResponse);
     }
 }

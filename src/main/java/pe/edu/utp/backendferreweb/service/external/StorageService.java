@@ -1,4 +1,4 @@
-package pe.edu.utp.backendferreweb.service;
+package pe.edu.utp.backendferreweb.service.external;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.cloud.StorageClient;

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pe.edu.utp.backendferreweb.persistence.model.Rol;
 import pe.edu.utp.backendferreweb.presentation.dto.request.RolRequest;
+import pe.edu.utp.backendferreweb.presentation.dto.response.RolResponse;
 import pe.edu.utp.backendferreweb.service.RolService;
 
 import java.util.List;
@@ -18,35 +19,35 @@ public class RolController {
     private final RolService rolService;
 
     @GetMapping
-    public ResponseEntity<List<Rol>> obtenerRoles() {
-        List<Rol> roles = rolService.obtenerTodos();
+    public ResponseEntity<List<RolResponse>> obtenerRoles() {
+        List<RolResponse> roles = rolService.obtenerTodos();
         return ResponseEntity.ok(roles);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<Rol> obtenerRol(@PathVariable Integer id) {
-        Rol rol = rolService.obtenerPorId(id);
+    public ResponseEntity<RolResponse> obtenerRol(@PathVariable Integer id) {
+        RolResponse rol = rolService.obtenerPorId(id);
         return ResponseEntity.ok(rol);
     }
 
     @GetMapping("/tipo/{tipo}")
-    public ResponseEntity<Rol> obtenerRol(@PathVariable String tipo) {
-        Rol rol = rolService.obtenerPorTipo(tipo);
+    public ResponseEntity<RolResponse> obtenerRol(@PathVariable String tipo) {
+        RolResponse rol = rolService.obtenerPorTipo(tipo);
         return ResponseEntity.ok(rol);
     }
 
     @PostMapping()
-    public ResponseEntity<Rol> crearRol(@RequestPart RolRequest request,
+    public ResponseEntity<RolResponse> crearRol(@RequestPart RolRequest request,
                                         @RequestPart(required = false) MultipartFile imagen) {
-        Rol nuevoRol = rolService.crearRol(request, imagen);
+        RolResponse nuevoRol = rolService.crearRol(request, imagen);
         return new ResponseEntity<>(nuevoRol, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Rol> actualizarRol(@PathVariable Integer id,
+    public ResponseEntity<RolResponse> actualizarRol(@PathVariable Integer id,
                                              @RequestPart RolRequest request,
                                              @RequestPart(required = false) MultipartFile imagen) {
-        Rol nuevoRol = rolService.editarRol(id, request, imagen);
+        RolResponse nuevoRol = rolService.editarRol(id, request, imagen);
         return ResponseEntity.ok(nuevoRol);
     }
 

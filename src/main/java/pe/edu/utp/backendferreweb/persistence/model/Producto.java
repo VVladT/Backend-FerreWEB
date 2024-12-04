@@ -3,7 +3,6 @@ package pe.edu.utp.backendferreweb.persistence.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -28,7 +27,7 @@ public class Producto {
     private Unidad unidadPorDefecto;
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER)
-    private Set<UnidadesPorProducto> unidades;
+    private Set<UnidadesPorProducto> unidadesPermitidas;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -36,7 +35,7 @@ public class Producto {
     @Column(name = "descripcion")
     private String descripcion;
 
-    @Column(name = "stock", nullable = false)
+    @Column(name = "stock")
     private Integer stock;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -47,15 +46,23 @@ public class Producto {
     private String rutaImagen;
 
     @OneToMany(mappedBy = "producto", fetch = FetchType.EAGER)
-    private Set<ProductosPorAlmacen> productosPorAlmacen;
+    private Set<ProductosPorAlmacen> almacenes;
+
+    public void addUnidadPermitida(UnidadesPorProducto unidadPermitida) {
+        unidadesPermitidas.add(unidadPermitida);
+    }
+
+    public void addAlmacen(ProductosPorAlmacen almacen) {
+        almacenes.add(almacen);
+    }
 
     @PrePersist
     @PreUpdate
     public void calcularStock() {
         stock = 0;
 
-        if (productosPorAlmacen != null && !productosPorAlmacen.isEmpty()) {
-            for (ProductosPorAlmacen productoAlmacen : productosPorAlmacen) {
+        if (almacenes != null && !almacenes.isEmpty()) {
+            for (ProductosPorAlmacen productoAlmacen : almacenes) {
                 stock += productoAlmacen.getCantidad();
             }
         }

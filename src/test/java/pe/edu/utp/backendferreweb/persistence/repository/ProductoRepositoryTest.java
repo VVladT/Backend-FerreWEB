@@ -38,8 +38,8 @@ class ProductoRepositoryTest {
                 .nombre("Producto1")
                 .categoria(categoria)
                 .stock(10)
-                .productosPorAlmacen(new HashSet<>())
-                .unidades(new HashSet<>())
+                .almacenes(new HashSet<>())
+                .unidadesPermitidas(new HashSet<>())
                 .build();
 
         Unidad unidad = Unidad.builder().nombre("Unidad").build();
@@ -58,8 +58,8 @@ class ProductoRepositoryTest {
                 .cantidad(10)
                 .build();
 
-        producto.getUnidades().add(unidadesPorProducto);
-        producto.getProductosPorAlmacen().add(productosPorAlmacen);
+        producto.getUnidadesPermitidas().add(unidadesPorProducto);
+        producto.getAlmacenes().add(productosPorAlmacen);
 
 
         productoRepository.save(producto);
@@ -67,7 +67,7 @@ class ProductoRepositoryTest {
         Producto productoFound = productoRepository.findById(producto.getIdProducto())
                 .orElse(null);
 
-        assertEquals(productoFound.getProductosPorAlmacen().iterator().next().getCantidad(), 10);
-        assertEquals(productoFound.getUnidades().iterator().next().getPrecio(), 10.50);
+        assertEquals(productoFound.getAlmacenes().iterator().next().getCantidad(), 10);
+        assertEquals(productoFound.getUnidadesPermitidas().iterator().next().getPrecio(), 10.50);
     }
 }

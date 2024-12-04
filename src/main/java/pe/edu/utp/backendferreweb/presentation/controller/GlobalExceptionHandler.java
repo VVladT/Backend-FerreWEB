@@ -44,6 +44,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArguments(IllegalArgumentException e) {
+        ErrorResponse error = ErrorResponse.builder()
+                .code("E-003")
+                .message(e.getMessage())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(ConfigurationException.class)
     public ResponseEntity<ErrorResponse> handleConfigurationException(ConfigurationException e) {
         ErrorResponse error = ErrorResponse.builder()
@@ -87,6 +96,6 @@ public class GlobalExceptionHandler {
                 .code("G-001")
                 .message(e.getMessage())
                 .build();
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
