@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.backendferreweb.persistence.model.Proveedor;
+import pe.edu.utp.backendferreweb.persistence.model.enums.EAuditAction;
 import pe.edu.utp.backendferreweb.persistence.repository.ProveedorRepository;
 import pe.edu.utp.backendferreweb.presentation.dto.mappers.ProveedorMapper;
 import pe.edu.utp.backendferreweb.presentation.dto.request.ProveedorRequest;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ProveedorService {
     private final ProveedorRepository proveedorRepository;
     private final ProveedorMapper proveedorMapper;
+    private final AuditoriaService auditoriaService;
 
     public List<ProveedorResponse> obtenerTodos() {
         return proveedorRepository.findAllActive().stream()
@@ -44,26 +46,8 @@ public class ProveedorService {
     }
 
     public ProveedorResponse crearProveedor(ProveedorRequest request) {
-        String ruc = request.getRuc();
-        String nombre = request.getNombre();
-        String email = request.getEmail();
-        String telefono = request.getTelefono();
-        String direccion = request.getDireccion();
-
-        if (ruc == null) throw new IllegalArgumentException("El RUC no puede ser nulo");
-        if (ruc.isBlank()) throw new IllegalArgumentException("El RUC no puede estar vacío");
-        if (ruc.length() != 11) throw new IllegalArgumentException("El RUC debe tener 11 dígitos");
-        if (nombre == null) throw new IllegalArgumentException("El nombre no puede ser nulo");
-        if (nombre.isBlank()) throw new IllegalArgumentException("El nombre no puede estar vacío");
-        if (email == null) throw new IllegalArgumentException("El email no puede ser nulo");
-        if (email.isBlank()) throw new IllegalArgumentException("El email no puede estar vacío");
-        if (telefono == null) throw new IllegalArgumentException("El telefono no puede ser nulo");
-        if (telefono.isBlank()) throw new IllegalArgumentException("El telefono no puede estar vacío");
-        if (direccion == null) throw new IllegalArgumentException("La dirección no puede ser nula");
-        if (direccion.isBlank()) throw new IllegalArgumentException("La dirección no puede estar vacía");
-
-        if (proveedorRepository.existsActiveByRuc(ruc))
-            throw new EntityExistsException("Ya existe proveedor con ruc: " + ruc);
+        if (proveedorRepository.existsActiveByRuc(request.getRuc()))
+            throw new EntityExistsException("Ya existe proveedor con ruc: " + request.getRuc());
 
         Proveedor proveedor = proveedorMapper.toEntity(request);
         Proveedor nuevoProveedor = proveedorRepository.save(proveedor);
@@ -86,47 +70,22 @@ public class ProveedorService {
             throw new EntityExistsException("Ya existe proveedor con ruc: " + nuevoRuc);
         }
 
-        if (nuevoNombre != null) {
-            if (nuevoNombre.isBlank())
-                throw new IllegalArgumentException("El nuevo nombre no puede estar vacío");
+        if (nuevoNombre != null) proveedorExistente.setNombre(nuevoNombre);
 
-            proveedorExistente.setNombre(nuevoNombre);
-        }
+        if (nuevoNombreComercial != null) proveedorExistente.setNombreComercial(nuevoNombreComercial);
 
-        if (nuevoNombreComercial != null) {
-            if (nuevoNombreComercial.isBlank())
-                throw new IllegalArgumentException("El nuevo nombre comercial no puede estar vacío");
+        if (nuevoEmail != null) proveedorExistente.setEmail(nuevoEmail);
 
-            proveedorExistente.setNombreComercial(nuevoNombreComercial);
-        }
+        if (nuevoTelefono != null) proveedorExistente.setTelefono(nuevoTelefono);
 
-        if (nuevoEmail != null) {
-            if (nuevoEmail.isBlank())
-                throw new IllegalArgumentException("El nuevo email no puede estar vacío");
-
-            proveedorExistente.setEmail(nuevoEmail);
-        }
-
-        if (nuevoTelefono != null) {
-            if (nuevoTelefono.isBlank())
-                throw new IllegalArgumentException("El nuevo teléfono no puede estar vacío");
-
-            proveedorExistente.setTelefono(nuevoTelefono);
-        }
-
-        if (nuevaDireccion != null) {
-            if (nuevaDireccion.isBlank())
-                throw new IllegalArgumentException("La nueva dirección no puede estar vacía");
-
-            proveedorExistente.setDireccion(nuevaDireccion);
-        }
+        if (nuevaDireccion != null) proveedorExistente.setDireccion(nuevaDireccion);
 
         Proveedor proveedorActualizado = proveedorRepository.save(proveedorExistente);
 
         return proveedorMapper.toResponse(proveedorActualizado);
     }
 
-    public void eliminarProveedor(Integer id) {
+    public void eliminarProveedor(Integer id, String motivo) {
         Proveedor proveedorParaEliminar = proveedorRepository.findActiveById(id);
 
         if (proveedorParaEliminar == null)
@@ -134,6 +93,12 @@ public class ProveedorService {
 
         proveedorParaEliminar.setFechaEliminado(LocalDateTime.now());
 
+        auditoriaService.registerAudit(id,"Proveedor", EAuditAction.DELETE.name(), motivo);
+
         proveedorRepository.save(proveedorParaEliminar);
+    }
+
+    public Proveedor obtenerEntidadPorId(Integer id) {
+        return proveedorRepository.findActiveById(id);
     }
 }

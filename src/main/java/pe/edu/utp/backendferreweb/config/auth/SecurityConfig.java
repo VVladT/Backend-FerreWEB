@@ -3,7 +3,8 @@ package pe.edu.utp.backendferreweb.config.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,7 +13,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pe.edu.utp.backendferreweb.config.auth.filter.JwtAuthFilter;
 import pe.edu.utp.backendferreweb.persistence.model.enums.ERol;
 
@@ -34,7 +37,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(Collections.singletonList(frontendUrl));
-        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -53,12 +56,31 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/me").authenticated()
                         .requestMatchers("/api/users/**").hasAuthority(ERol.ADMIN.name())
                         .requestMatchers("/api/roles/**").hasAuthority(ERol.ADMIN.name())
-                        .requestMatchers("/api/almacenes/**").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers("/api/almacenes/**").hasAnyAuthority(
+                                ERol.ADMIN.name(), ERol.INVENTARIO.name()
+                        )
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
                         .requestMatchers("/api/categorias/**").hasAuthority(ERol.ADMIN.name())
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-                        .requestMatchers("/api/productos/**").hasAuthority(ERol.ADMIN.name())
-                        .requestMatchers("api/unidades/**").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers("/api/productos/**").hasAnyAuthority(
+                                ERol.ADMIN.name(), ERol.INVENTARIO.name()
+                        )
+                        .requestMatchers("/api/unidades/**").hasAnyAuthority(
+                                ERol.ADMIN.name(), ERol.INVENTARIO.name()
+                        )
+                        .requestMatchers("/api/proveedores/**").hasAnyAuthority(
+                                ERol.ADMIN.name(), ERol.COMPRAS.name())
+                        .requestMatchers("/api/cotizaciones").hasAnyAuthority(
+                                ERol.ADMIN.name(), ERol.COMPRAS.name()
+                        )
+                        .requestMatchers("/api/ordenes-compra/aprobar/").hasAuthority(ERol.ADMIN.name())
+                        .requestMatchers("/api/ordenes-compra/**").hasAnyAuthority(
+                                ERol.ADMIN.name(), ERol.COMPRAS.name()
+                        )
+                        .requestMatchers("/api/ventas/**").hasAnyAuthority(
+                                ERol.ADMIN.name(), ERol.CAJERO.name()
+                        )
+                        .requestMatchers("/test/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager -> sessionManager

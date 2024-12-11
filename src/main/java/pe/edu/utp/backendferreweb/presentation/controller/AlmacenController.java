@@ -3,11 +3,13 @@ package pe.edu.utp.backendferreweb.presentation.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pe.edu.utp.backendferreweb.persistence.model.Almacen;
 import pe.edu.utp.backendferreweb.presentation.dto.request.AlmacenRequest;
 import pe.edu.utp.backendferreweb.presentation.dto.response.AlmacenResponse;
 import pe.edu.utp.backendferreweb.service.AlmacenService;
+import pe.edu.utp.backendferreweb.util.validation.groups.ValidActualizacion;
+import pe.edu.utp.backendferreweb.util.validation.groups.ValidCreacion;
 
 import java.util.List;
 
@@ -31,13 +33,18 @@ public class AlmacenController {
     }
 
     @PostMapping
-    public ResponseEntity<AlmacenResponse> crearAlmacen(@RequestBody AlmacenRequest request) {
+    public ResponseEntity<AlmacenResponse> crearAlmacen(@RequestBody
+                                                        @Validated(ValidCreacion.class)
+                                                        AlmacenRequest request) {
         AlmacenResponse nuevoAlmacen = almacenService.crearAlmacen(request);
         return new ResponseEntity<>(nuevoAlmacen, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AlmacenResponse> actualizarAlmacen(@PathVariable Integer id, @RequestBody AlmacenRequest request) {
+    public ResponseEntity<AlmacenResponse> actualizarAlmacen(@PathVariable Integer id,
+                                                             @RequestBody
+                                                             @Validated(ValidActualizacion.class)
+                                                             AlmacenRequest request) {
         AlmacenResponse almacenActualizado = almacenService.editarAlmacen(id, request);
         return ResponseEntity.ok(almacenActualizado);
     }

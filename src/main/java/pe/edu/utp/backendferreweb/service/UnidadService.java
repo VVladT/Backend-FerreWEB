@@ -3,6 +3,7 @@ package pe.edu.utp.backendferreweb.service;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.backendferreweb.persistence.model.Unidad;
 import pe.edu.utp.backendferreweb.persistence.repository.UnidadRepository;
@@ -74,6 +75,9 @@ public class UnidadService {
     }
 
     public void eliminarUnidad(Integer id) {
+        if (unidadRepository.isAssociatedWithProduct(id))
+            throw new DataIntegrityViolationException("No se pudo eliminar la unidad debido a que está asociada con un producto");
+
         Unidad unidadParaEliminar = unidadRepository.findActiveById(id);
 
         if (unidadParaEliminar == null) throw new EntityNotFoundException("No existe unidad con id: " + id);

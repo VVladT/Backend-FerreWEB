@@ -4,6 +4,8 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.edu.utp.backendferreweb.persistence.model.Rol;
 import pe.edu.utp.backendferreweb.persistence.model.Usuario;
+import pe.edu.utp.backendferreweb.persistence.model.enums.EAuditAction;
 import pe.edu.utp.backendferreweb.persistence.model.enums.ERol;
 import pe.edu.utp.backendferreweb.persistence.repository.UsuarioRepository;
 import pe.edu.utp.backendferreweb.presentation.dto.mappers.UsuarioMapper;
@@ -36,6 +39,7 @@ public class UsuarioService implements UserDetailsService {
     private final StorageService storageService;
     private final UsuarioMapper usuarioMapper;
     private final PasswordEncoder passwordEncoder;
+    private final AuditoriaService auditoriaService;
 
     public List<UsuarioResponse> obtenerTodos() {
         List<Usuario> usuarios = usuarioRepository.findAll();
@@ -44,7 +48,7 @@ public class UsuarioService implements UserDetailsService {
                 .toList();
     }
 
-    public synchronized UsuarioResponse registrarUsuario(UsuarioRequest request, MultipartFile imagen) {
+    public synchronized UsuarioResponse registrarUsuario(UsuarioRequest request) {
         String username = request.getUser();
         String dni = request.getDni();
         String nombre = request.getNombre();
@@ -79,16 +83,15 @@ public class UsuarioService implements UserDetailsService {
 
         usuario = usuarioRepository.save(usuario);
 
-        if (imagen != null && !imagen.isEmpty()) {
-            String rutaImagen = storageService.uploadFile(imagen, "usuario/" + usuario.getIdUsuario());
-            usuario.setRutaImagen(rutaImagen);
-            usuarioRepository.save(usuario);
-        }
-
         return usuarioMapper.toResponse(usuario);
     }
 
-    public UsuarioResponse editarUsuario(Integer id, UsuarioRequest request, MultipartFile imagen) {
+    public UsuarioResponse editarUsuario(Integer id, UsuarioRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        if (usuario.getIdUsuario().equals(id))
+            throw new IllegalStateException("No puedes editar tu propio usuario.");
+
         Usuario usuarioParaActualizar = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("El usuario no existe."));
 
@@ -164,22 +167,27 @@ public class UsuarioService implements UserDetailsService {
             usuarioParaActualizar.setRoles(roles);
         }
 
-        if (imagen != null && !imagen.isEmpty()) {
-            String rutaImagen = storageService.uploadImage(imagen, "usuario/" + usuarioParaActualizar.getIdUsuario());
-            usuarioParaActualizar.setRutaImagen(rutaImagen);
-        }
-
         Usuario usuarioActualizado = usuarioRepository.save(usuarioParaActualizar);
 
         return usuarioMapper.toResponse(usuarioActualizado);
     }
 
-    public void eliminarUsuario(Integer id) {
+    public void eliminarUsuario(Integer id, String motivo) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        if (usuario.getIdUsuario().equals(id))
+            throw new IllegalStateException("No puedes eliminar tu propio usuario desde la pantalla de administración.");
+
         Usuario usuarioParaEliminar = usuarioRepository.findActiveById(id);
 
-        if (usuarioParaEliminar == null) throw new EntityNotFoundException("El usuario no está activo.");
+        if (usuarioParaEliminar == null)
+            throw new EntityNotFoundException("El usuario no está activo.");
+        if (usuarioParaEliminar.getRoles().size() > 1)
+            throw new IllegalStateException("Debe quitar los roles extra antes de eliminar a un empleado.");
 
         usuarioParaEliminar.setFechaEliminado(LocalDateTime.now());
+
+        auditoriaService.registerAudit(id, "Usuario", EAuditAction.DELETE.name(), motivo);
 
         usuarioRepository.save(usuarioParaEliminar);
     }

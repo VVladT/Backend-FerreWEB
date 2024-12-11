@@ -3,10 +3,13 @@ package pe.edu.utp.backendferreweb.presentation.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.utp.backendferreweb.presentation.dto.request.UnidadRequest;
 import pe.edu.utp.backendferreweb.presentation.dto.response.UnidadResponse;
 import pe.edu.utp.backendferreweb.service.UnidadService;
+import pe.edu.utp.backendferreweb.util.validation.groups.ValidActualizacion;
+import pe.edu.utp.backendferreweb.util.validation.groups.ValidCreacion;
 
 import java.util.List;
 
@@ -30,13 +33,18 @@ public class UnidadController {
     }
 
     @PostMapping
-    public ResponseEntity<UnidadResponse> crearUnidad(@RequestBody UnidadRequest request) {
+    public ResponseEntity<UnidadResponse> crearUnidad(@RequestBody
+                                                      @Validated(ValidCreacion.class)
+                                                      UnidadRequest request) {
         UnidadResponse nuevaUnidad = unidadService.crearUnidad(request);
         return new ResponseEntity<>(nuevaUnidad, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UnidadResponse> actualizarUnidad(@PathVariable Integer id, @RequestBody UnidadRequest request) {
+    public ResponseEntity<UnidadResponse> actualizarUnidad(@PathVariable Integer id,
+                                                           @RequestBody
+                                                           @Validated(ValidActualizacion.class)
+                                                           UnidadRequest request) {
         UnidadResponse unidadActualizada = unidadService.editarUnidad(id, request);
         return ResponseEntity.ok(unidadActualizada);
     }

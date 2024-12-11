@@ -3,6 +3,7 @@ package pe.edu.utp.backendferreweb.service;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.edu.utp.backendferreweb.persistence.model.Categoria;
@@ -99,6 +100,9 @@ public class CategoriaService {
     }
 
     public void eliminarCategoria(Integer id) {
+        if (categoriaRepository.isAssociatedWithProduct(id))
+            throw new DataIntegrityViolationException("No se pudo eliminar la categoría debido a que está asociada con un producto");
+
         Categoria categoriaParaEliminar = categoriaRepository.findActiveById(id);
 
         if (categoriaParaEliminar == null)

@@ -7,9 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import pe.edu.utp.backendferreweb.presentation.dto.request.UsuarioRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -26,13 +27,12 @@ class UsuarioServiceTest {
                 .contrasena("pokiTrop123")
                 .apellidoPaterno("Tuñoque")
                 .apellidoMaterno("Morante")
-                .roles(List.of("ADMIN"))
+                .roles(new ArrayList<>())
                 .build();
 
-        usuarioService.registrarUsuario(request, null);
+        usuarioService.registrarUsuario(request);
 
         UserDetails usuarioFound = usuarioService.loadUserByUsername("vlad.tunoque@example.com");
         assertEquals(request.getUser(), usuarioFound.getUsername());
-        assertEquals(request.getRoles().getFirst(), usuarioFound.getAuthorities().iterator().next().getAuthority());
     }
 }

@@ -3,8 +3,6 @@ package pe.edu.utp.backendferreweb.persistence.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +15,7 @@ public class ProductosPorAlmacen {
     private ProductosPorAlmacenPK primaryKey = new ProductosPorAlmacenPK();
 
     @MapsId("idProducto")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_producto")
     private Producto producto;
 
@@ -27,5 +25,5 @@ public class ProductosPorAlmacen {
     private Almacen almacen;
 
     @Column(name = "cantidad", nullable = false)
-    private Integer cantidad;
+    private Double cantidad;
 }

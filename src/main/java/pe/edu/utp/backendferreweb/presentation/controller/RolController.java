@@ -3,12 +3,14 @@ package pe.edu.utp.backendferreweb.presentation.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pe.edu.utp.backendferreweb.persistence.model.Rol;
 import pe.edu.utp.backendferreweb.presentation.dto.request.RolRequest;
 import pe.edu.utp.backendferreweb.presentation.dto.response.RolResponse;
 import pe.edu.utp.backendferreweb.service.RolService;
+import pe.edu.utp.backendferreweb.util.validation.groups.ValidActualizacion;
+import pe.edu.utp.backendferreweb.util.validation.groups.ValidCreacion;
 
 import java.util.List;
 
@@ -37,16 +39,22 @@ public class RolController {
     }
 
     @PostMapping()
-    public ResponseEntity<RolResponse> crearRol(@RequestPart RolRequest request,
-                                        @RequestPart(required = false) MultipartFile imagen) {
+    public ResponseEntity<RolResponse> crearRol(@RequestPart
+                                                @Validated(ValidCreacion.class)
+                                                RolRequest request,
+                                                @RequestPart(required = false)
+                                                MultipartFile imagen) {
         RolResponse nuevoRol = rolService.crearRol(request, imagen);
         return new ResponseEntity<>(nuevoRol, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<RolResponse> actualizarRol(@PathVariable Integer id,
-                                             @RequestPart RolRequest request,
-                                             @RequestPart(required = false) MultipartFile imagen) {
+                                                     @RequestPart
+                                                     @Validated(ValidActualizacion.class)
+                                                     RolRequest request,
+                                                     @RequestPart(required = false)
+                                                     MultipartFile imagen) {
         RolResponse nuevoRol = rolService.editarRol(id, request, imagen);
         return ResponseEntity.ok(nuevoRol);
     }

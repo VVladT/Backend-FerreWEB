@@ -1,9 +1,13 @@
 package pe.edu.utp.backendferreweb.persistence.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -36,7 +40,7 @@ public class Producto {
     private String descripcion;
 
     @Column(name = "stock")
-    private Integer stock;
+    private Double stock;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_eliminacion")
@@ -49,17 +53,19 @@ public class Producto {
     private Set<ProductosPorAlmacen> almacenes;
 
     public void addUnidadPermitida(UnidadesPorProducto unidadPermitida) {
+        if (unidadesPermitidas == null) unidadesPermitidas = new HashSet<>();
         unidadesPermitidas.add(unidadPermitida);
     }
 
     public void addAlmacen(ProductosPorAlmacen almacen) {
+        if (almacenes == null) almacenes = new HashSet<>();
         almacenes.add(almacen);
     }
 
     @PrePersist
     @PreUpdate
     public void calcularStock() {
-        stock = 0;
+        stock = 0.0;
 
         if (almacenes != null && !almacenes.isEmpty()) {
             for (ProductosPorAlmacen productoAlmacen : almacenes) {

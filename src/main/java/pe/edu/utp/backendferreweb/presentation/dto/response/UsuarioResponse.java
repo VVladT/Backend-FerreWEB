@@ -11,6 +11,7 @@ public class UsuarioResponse {
     private Integer id;
     private String dni;
     private String username;
+    private String nombreCompleto;
     private String nombre;
     private String apellidoPat;
     private String apellidoMat;

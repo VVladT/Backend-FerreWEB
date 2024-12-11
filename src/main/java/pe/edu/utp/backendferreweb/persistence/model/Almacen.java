@@ -1,10 +1,12 @@
 package pe.edu.utp.backendferreweb.persistence.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 @Builder
@@ -23,9 +25,6 @@ public class Almacen {
 
     @Column(name = "direccion")
     private String direccion;
-
-    @OneToMany(mappedBy = "almacen", fetch = FetchType.EAGER)
-    private Set<ProductosPorAlmacen> productosPorAlmacen;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "fecha_eliminacion")

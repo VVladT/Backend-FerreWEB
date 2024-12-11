@@ -4,6 +4,7 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import pe.edu.utp.backendferreweb.persistence.model.Almacen;
 import pe.edu.utp.backendferreweb.persistence.repository.AlmacenRepository;
@@ -87,6 +88,9 @@ public class AlmacenService {
     }
 
     public void eliminarAlmacen(Integer id) {
+        if (almacenRepository.isAssociatedWithProduct(id))
+            throw new DataIntegrityViolationException("No se pudo eliminar el almacen debido a que está asociado con un producto");
+
         Almacen almacenParaEliminar = almacenRepository.findActiveById(id);
 
         if (almacenParaEliminar == null) throw new EntityNotFoundException("No existe el almacén con el id: " + id);
@@ -98,5 +102,10 @@ public class AlmacenService {
     public Almacen obtenerPorNombre(String nombre) {
         return almacenRepository.findByNombre(nombre)
                 .orElseThrow(() -> new EntityNotFoundException("No existe el almacén con el nombre: " + nombre));
+    }
+
+    public Almacen obtenerEntidadPorId(Integer id) {
+        return almacenRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe almacen con id: " + id));
     }
 }

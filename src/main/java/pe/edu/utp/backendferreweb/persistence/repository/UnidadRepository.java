@@ -19,4 +19,18 @@ public interface UnidadRepository extends JpaRepository<Unidad, Integer> {
 
     @Query("SELECT u FROM Unidad u WHERE u.nombre = :nombre AND u.fechaEliminado IS NULL")
     Optional<Unidad> findByNombre(String nombre);
+
+    @Query("""
+           SELECT
+            CASE
+                WHEN EXISTS
+                    (SELECT 1
+                    FROM UnidadesPorProducto up
+                    JOIN up.producto p
+                    WHERE up.unidad.idUnidad = :id
+                        AND p.fechaEliminado IS NULL)
+                    THEN TRUE
+                    ELSE FALSE
+            END""")
+    boolean isAssociatedWithProduct(Integer id);
 }

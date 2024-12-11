@@ -1,7 +1,7 @@
 package pe.edu.utp.backendferreweb.config.bd;
 
-import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.boot.model.naming.Identifier;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
 public class LowerCaseNamingStrategy implements PhysicalNamingStrategy {

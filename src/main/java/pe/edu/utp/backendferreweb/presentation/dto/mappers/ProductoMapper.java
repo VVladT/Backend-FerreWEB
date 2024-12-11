@@ -2,7 +2,7 @@ package pe.edu.utp.backendferreweb.presentation.dto.mappers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import pe.edu.utp.backendferreweb.persistence.model.*;
+import pe.edu.utp.backendferreweb.persistence.model.Producto;
 import pe.edu.utp.backendferreweb.presentation.dto.request.ProductoRequest;
 import pe.edu.utp.backendferreweb.presentation.dto.response.AlmacenProductoResponse;
 import pe.edu.utp.backendferreweb.presentation.dto.response.ProductoResponse;
@@ -64,7 +64,7 @@ public class ProductoMapper {
                 .nombre(producto.getNombre())
                 .descripcion(producto.getDescripcion())
                 .rutaImagen(producto.getRutaImagen())
-                .stock(producto.getStock())
+                .stock((int) Math.round(producto.getStock()))
                 .categoria(categoriaMapper.toResponse(producto.getCategoria()))
                 .unidadPorDefecto(unidadMapper.toResponse(producto.getUnidadPorDefecto()))
                 .almacenes(almacenes)

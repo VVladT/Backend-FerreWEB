@@ -8,5 +8,5 @@ import lombok.Data;
 public class AlmacenProductoResponse {
     private Integer idProducto;
     private AlmacenResponse almacen;
-    private Integer cantidad;
+    private Double cantidad;
 }

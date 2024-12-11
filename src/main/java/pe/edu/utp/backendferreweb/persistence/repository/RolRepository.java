@@ -7,7 +7,7 @@ import pe.edu.utp.backendferreweb.persistence.model.Rol;
 import java.util.Optional;
 
 public interface RolRepository extends JpaRepository<Rol, Integer> {
-    Optional<Rol> getRolByTipo(String name);
+    Optional<Rol> findByTipo(String name);
 
     boolean existsByTipo(String tipo);
 

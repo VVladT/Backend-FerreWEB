@@ -29,7 +29,7 @@ public class DetalleCompra {
     private Unidad unidad;
 
     @Column(name = "cantidad")
-    private Integer cantidad;
+    private Double cantidad;
 
     @Column(name = "precio_unitario")
     private Double precioUnitario;
@@ -37,13 +37,13 @@ public class DetalleCompra {
     @Column(name = "subtotal")
     private Double subtotal;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "fecha_eliminacion")
-    private LocalDateTime fechaEliminado;
-
     @PrePersist
     @PreUpdate
-    public void calcularSubtotal() {
+    public void calcularValores() {
+        calcularSubtotal();
+    }
+
+    private void calcularSubtotal() {
         subtotal = cantidad * precioUnitario;
     }
 }

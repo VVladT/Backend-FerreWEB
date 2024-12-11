@@ -5,13 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @ActiveProfiles("test")
 @SpringBootTest
-class MailServiceTest {
+class JavaMailServiceTest {
     @Autowired
-    MailService mailService;
+    JavaMailService javaMailService;
 
     @Test
     void sendSimpleEmail() {
@@ -19,7 +17,7 @@ class MailServiceTest {
         String asunto = "Prueba Mensaje Simple";
         String contenido = "Este es un mensaje de prueba, si deseas ignorarlo, puedes hacerlo.";
 
-        mailService.sendSimpleEmail(destino, asunto, contenido);
+        javaMailService.sendSimpleEmail(destino, asunto, contenido);
     }
 
     @Test

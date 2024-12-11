@@ -8,7 +8,7 @@ import pe.edu.utp.backendferreweb.persistence.model.*;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @DataJpaTest
@@ -31,13 +31,12 @@ class ProductoRepositoryTest {
         Almacen almacen = Almacen.builder()
                 .nombre("Almacen1")
                 .direccion("Calle siempre viva")
-                .productosPorAlmacen(new HashSet<>())
                 .build();
 
         Producto producto = Producto.builder()
                 .nombre("Producto1")
                 .categoria(categoria)
-                .stock(10)
+                .stock(10.0)
                 .almacenes(new HashSet<>())
                 .unidadesPermitidas(new HashSet<>())
                 .build();
@@ -55,7 +54,7 @@ class ProductoRepositoryTest {
                 .primaryKey(new ProductosPorAlmacenPK())
                 .almacen(almacen)
                 .producto(producto)
-                .cantidad(10)
+                .cantidad(10.0)
                 .build();
 
         producto.getUnidadesPermitidas().add(unidadesPorProducto);

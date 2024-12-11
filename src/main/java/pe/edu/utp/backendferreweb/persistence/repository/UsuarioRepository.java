@@ -3,7 +3,6 @@ package pe.edu.utp.backendferreweb.persistence.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import pe.edu.utp.backendferreweb.persistence.model.Almacen;
 import pe.edu.utp.backendferreweb.persistence.model.Rol;
 import pe.edu.utp.backendferreweb.persistence.model.Usuario;
 

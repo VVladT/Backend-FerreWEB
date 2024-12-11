@@ -44,7 +44,7 @@ public class RolService {
     }
 
     public RolResponse obtenerPorTipo(String tipoRol) {
-        Rol rol = rolRepository.getRolByTipo(tipoRol)
+        Rol rol = rolRepository.findByTipo(tipoRol)
                 .orElseThrow(() -> new EntityNotFoundException("No existe rol con el tipo: " + tipoRol));
 
         return rolMapper.toResponse(rol);
@@ -109,7 +109,7 @@ public class RolService {
     }
 
     public Rol obtenerEntidadPorTipo(String tipoRol) {
-        return rolRepository.getRolByTipo(tipoRol)
+        return rolRepository.findByTipo(tipoRol)
                 .orElseGet(() -> rolRepository.save(Rol.builder()
                         .tipo(tipoRol)
                         .build()));

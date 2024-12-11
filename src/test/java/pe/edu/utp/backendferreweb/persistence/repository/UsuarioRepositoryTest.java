@@ -9,7 +9,8 @@ import pe.edu.utp.backendferreweb.persistence.model.Usuario;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static pe.edu.utp.backendferreweb.util.conversion.BlobConverter.utf8ToBlob;
 
 @ActiveProfiles("test")

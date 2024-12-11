@@ -3,10 +3,11 @@ package pe.edu.utp.backendferreweb.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import pe.edu.utp.backendferreweb.persistence.model.*;
-import pe.edu.utp.backendferreweb.persistence.repository.*;
+import pe.edu.utp.backendferreweb.persistence.repository.ProductoRepository;
 import pe.edu.utp.backendferreweb.presentation.dto.mappers.ProductoMapper;
 import pe.edu.utp.backendferreweb.presentation.dto.request.AlmacenCantidadRequest;
 import pe.edu.utp.backendferreweb.presentation.dto.request.ProductoRequest;
@@ -67,12 +68,7 @@ public class ProductoService {
 
         Integer idProducto = nuevoProducto.getIdProducto();
 
-        request.getAlmacenes().forEach(almacen -> almacen.setIdProducto(idProducto));
-        request.getUnidadesPermitidas().forEach(unidad -> unidad.setIdProducto(idProducto));
         String rutaImagen = storageService.uploadImage(imagen, "producto/" + idProducto + ".webp");
-
-        nuevoProducto = productoMapper.toEntity(request);
-        nuevoProducto.setIdProducto(idProducto);
 
         asignarUnidadesPermitidas(request.getUnidadesPermitidas(), nuevoProducto);
         asignarAlmacenes(request.getAlmacenes(), nuevoProducto);
@@ -135,6 +131,9 @@ public class ProductoService {
     }
 
     public void eliminarProducto(Integer id) {
+        if (productoRepository.tieneOrdenPendiente(id))
+            throw new DataIntegrityViolationException("No se pudo eliminar el producto debido a que tiene una orden de compra pendiente");
+
         Producto productoParaEliminar = productoRepository.findActiveById(id);
 
         if (productoParaEliminar == null) throw new EntityNotFoundException("El producto no existe.");

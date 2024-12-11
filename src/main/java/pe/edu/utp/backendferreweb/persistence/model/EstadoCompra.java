@@ -17,5 +17,7 @@ public class EstadoCompra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_estado_compra")
     private Integer idEstadoCompra;
+
+    @Column(name = "estado")
     private String estado;
 }

@@ -39,7 +39,7 @@ public class AuthService {
     }
 
     public AuthResponse registrarUsuario(UsuarioRequest request) {
-        UsuarioResponse usuarioResponse = usuarioService.registrarUsuario(request, null);
+        UsuarioResponse usuarioResponse = usuarioService.registrarUsuario(request);
         String jwtToken = jwtService.getToken(request.getUser());
 
         return new AuthResponse(jwtToken, usuarioResponse);
